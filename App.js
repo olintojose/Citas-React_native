@@ -1,69 +1,115 @@
 import React, {useState} from 'react';
-import {FlatList, StyleSheet, Text, View} from 'react-native';
-import Cita from './components/Cita'
-import Formulario from './components/Formulario'
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  View,
+  TouchableHighlight,
+  Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
+} from 'react-native';
+import Cita from './components/Cita';
+import Formulario from './components/Formulario';
 
 const App: () => React$Node = () => {
+  const [citas, setCitas] = useState([]);
+  const [mostrarForm, guardarMostrarForm] = useState(false);
   //DEfinir el state de citas
 
-  const [citas, setCitas] = useState([
-    {id: '1', paciente: 'Hulk', propietario: 'Oliver', sintomas: 'Come mucho'},
-    {
-      id: '2',
-      paciente: 'Thor',
-      propietario: 'Valery',
-      sintomas: 'Duerme mucho',
-    },
-    {
-      id: '3',
-      paciente: 'Loki',
-      propietario: 'Victoria',
-      sintomas: 'Ladra mucho',
-    },
-    {
-      id: '4',
-      paciente: 'Ironman',
-      propietario: 'Yenny',
-      sintomas: 'Ladra mucho',
-    },
-  ]);
-
   //Elimina los pacientes del state
-  const eliminarPaciente = id => {
-    setCitas ( (citasActuales ) => {
-      return citasActuales.filter( cita => cita.id !== id )
-    })
-  }
+  const eliminarPaciente = (id) => {
+    setCitas((citasActuales) => {
+      return citasActuales.filter((cita) => cita.id !== id);
+    });
+  };
+
+  //muestra u oculta el formulario
+  const mostrarFormulario = () => {
+    guardarMostrarForm(!mostrarForm);
+  };
+
+  //ocultar teclado
+
+  const cerrarTeclado = () => {
+    Keyboard.dismiss();
+  };
 
   return (
-    <>
+    <TouchableWithoutFeedback onPress={() => cerrarTeclado()}>
       <View style={styles.container}>
         <Text style={styles.title}>Administrador de citas</Text>
-        <Formulario />
-        <Text style={styles.title}>{citas.length > 0 ? 'Administra tus citas' : 'No hay citas, crea una' }</Text>
-       
-        <FlatList
-          data={citas}
-          renderItem={({item}) => <Cita item={item} eliminarPaciente={eliminarPaciente} />}
-          keyExtractor={(cita) => cita.id}
-        />
+        <View>
+          <TouchableHighlight
+            onPress={() => mostrarFormulario()}
+            style={styles.btnMostrarForm}>
+            <Text style={styles.textoMostrarForm}>
+              {' '}
+              {mostrarForm ? 'Ver Citas' : 'Crear citas'}
+            </Text>
+          </TouchableHighlight>
+        </View>
+
+        <View style={styles.contenido}>
+          {mostrarForm ? (
+            <Formulario
+              citas={citas}
+              setCitas={setCitas}
+              guardarMostrarForm={guardarMostrarForm}
+            />
+          ) : (
+            <>
+              <Text style={styles.title}>
+                {citas.length > 0
+                  ? 'Administra tus citas'
+                  : 'No hay citas, crea una'}
+              </Text>
+
+              <FlatList
+                style={styles.listado}
+                data={citas}
+                renderItem={({item}) => (
+                  <Cita item={item} eliminarPaciente={eliminarPaciente} />
+                )}
+                keyExtractor={(cita) => cita.id}
+              />
+            </>
+          )}
+        </View>
       </View>
-    </>
+    </TouchableWithoutFeedback>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#3F51B5',
+    backgroundColor: '#2E2E3A',
     flex: 1,
   },
   title: {
-    color: '#FFF',
+    color: '#BBB8B2',
     textAlign: 'center',
-    marginTop: 40,
-    marginBottom: 20,
+    marginTop: Platform.OS === 'ios' ? 40 : 15,
+    marginBottom: 7,
     fontSize: 24,
     fontWeight: 'bold',
+  },
+  contenido: {
+    flex: 1,
+    marginHorizontal: '2.5%',
+  },
+  listado: {
+    flex: 1,
+  },
+  btnMostrarForm: {
+    padding: 10,
+    backgroundColor: '#F34213',
+    marginVertical: 10,
+  },
+  textoMostrarForm: {
+    color: '#FFF',
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
 
