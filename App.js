@@ -13,7 +13,17 @@ import Cita from './components/Cita';
 import Formulario from './components/Formulario';
 
 const App: () => React$Node = () => {
-  const [citas, setCitas] = useState([]);
+  const [citas, setCitas] = useState([
+    {
+      id: '1qweq',
+      paciente: 'Hulk',
+      propietario: 'Oliver',
+      sintomas: 'Come mucho',
+      fecha: 'Jueves, 11 de Febrero, del 2021',
+      hora: '11:27:42',
+      telefono: '56 945767474',
+    },
+  ]);
   const [mostrarForm, guardarMostrarForm] = useState(false);
   //DEfinir el state de citas
 
